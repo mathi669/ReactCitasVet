@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Errors from "./Errors";
 
-const Formulario = ({ pacientes, setPacientes }) => {
+const Formulario = ({ pacientes, setPacientes, paciente }) => {
   const [nombre, setNombre] = useState("");
   const [dueño, setDueño] = useState("");
   const [email, setEmail] = useState("");
@@ -9,6 +9,23 @@ const Formulario = ({ pacientes, setPacientes }) => {
   const [descripcion, setDescripcion] = useState("");
 
   const [error, setError] = useState(false);
+
+  useEffect(()=>{
+    if(Object.keys(paciente).length > 0){
+      setNombre(paciente.nombre)
+      setDueño(paciente.dueño)
+      setEmail(paciente.email)
+      setFecha(paciente.fecha)
+      setDescripcion(paciente.descripcion)
+    }
+  }, [paciente])
+
+  const generarId = () => {
+    const random = Math.random().toString(36)
+    const fecha = Date.now().toString(36)
+
+    return random + fecha
+  }
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -27,10 +44,18 @@ const Formulario = ({ pacientes, setPacientes }) => {
       dueño,
       email,
       fecha,
-      descripcion,
+      descripcion
     };
 
-    setPacientes([...pacientes, objetoPaciente]);
+    if(paciente.id){
+      // Edictando registro
+      objetoPaciente.id = paciente.id
+    }else{
+      //Nuevo registro
+      objetoPaciente.id = generarId();
+      setPacientes([...pacientes, objetoPaciente]);
+    }
+
 
     //reiniciar form
     setNombre("");
